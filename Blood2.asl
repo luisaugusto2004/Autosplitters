@@ -17,8 +17,8 @@ state("Dosbox", "0, 73, 0, 0")
 	byte Loading3 : "dosbox.exe", 0x193FD40, 0x3A33B0;
 	byte MenuMaster : "dosbox.exe", 0x193FD40, 0x2CEE18;
 	byte Credits : "dosbox.exe", 0x193FD40, 0x25B2DDC;
-	byte Level : "dosbox.exe", 0x193E370, 0x354452;
-	byte MenuStage : "dosbox.exe", 0x193E370, 0x41AF64;
+	byte Level : "dosbox.exe", 0x193FD40, 0x354452;
+	byte MenuStage : "dosbox.exe", 0x193FD40, 0x41AF64;
 }
 
 state("Dosbox", "0, 74, 0, 0")
