@@ -97,7 +97,7 @@ split
 			return true;
 		}
 	}
-	else if (current.Level == vars.split[vars.SplitIndex]){
+	else if (current.Level == vars.split[vars.SplitIndex] && current.MenuMaster == 0){
 			vars.SplitIndex += 1;
 			return true;
 		}
