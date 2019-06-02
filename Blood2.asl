@@ -132,6 +132,10 @@ split
 			return true;
 		}
 	}
+	else if (settings["1.02"]){
+		if (current.Level != old.Level)
+			return true;
+	}
 	else if (current.Level == vars.split[vars.SplitIndex] && current.MenuMaster == 0){
 			vars.SplitIndex += 1;
 			return true;
