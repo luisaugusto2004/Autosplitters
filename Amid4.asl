@@ -9,11 +9,26 @@ state("AmidEvil-Win64-Shipping")
 	byte Paused : "AmidEvil-Win64-Shipping.exe", 0x2B95A68;
 }
 
+state("AmidEvil-Win64-Shipping", "steam") 
+{
+	byte Start : "AmidEvil-Win64-Shipping.exe", 0x2BB3470;
+	byte Loading : "AmidEvil-Win64-Shipping.exe", 0x2B7DDD4;
+	byte MenuStage : "AmidEvil-Win64-Shipping.exe", 0x2F79424;
+	byte Paused : "AmidEvil-Win64-Shipping.exe", 0x2B98F08;
+}
+
 startup
 {
 	settings.Add("Episodes", false, "Episode Runs");
+	settings.Add("Steam", false, "Playing Build 2012");
 }
 
+init
+{
+	if(settings["Steam"]){
+		version = "steam";
+	}
+}
 
 start
 {
