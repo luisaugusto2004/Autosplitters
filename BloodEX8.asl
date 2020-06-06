@@ -3,8 +3,10 @@ state("anuket_x64")
 	byte LevelTransition : "anuket_x64.exe", 0x675F50;
 	byte Credits : "anuket_x64.exe", 0x4FC132;
 	byte Episode : "anuket_x64.exe", 0x4FD120;
+	byte GLTransition : "anuket_x64.exe", 0x69E4D8;
 	byte Level : "anuket_x64.exe", 0x4FA3A8, 0x3;
 	byte Savinglol : "anuket_x64.exe", 0x5BB800;
+	byte MenuStage : "anuket_x64.exe", 0x4FD1DC;
 }
 
 init
@@ -21,7 +23,7 @@ init
 
 start
 {
-	if (current.Level == 49 && (current.LevelTransition != old.LevelTransition)){
+	if ((current.Level == 49 && (current.MenuStage == 0 && old.MenuStage != 0)) || (current.Level == 49 && old.Level != 49)){
 		vars.Episodes = new Dictionary<byte, bool>();
 			vars.Episodes.Add(0, false);
 			vars.Episodes.Add(1, false);
