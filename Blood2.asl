@@ -61,15 +61,14 @@ state("Dosbox", "1.02")
 
 state("nblood", "NBlood")
 {
-	byte Episode : "nblood.exe", 0xFAD9644;
-	byte Loading : "nblood.exe", 0x5A57DC;
-	byte Loading2 : "nblood.exe", 0x1020DC12;
-	byte Loading3 : "nblood.exe", 0x1020DC2C;
-	byte MenuMaster : "nblood.exe", 0xFE20984;
-	byte Credits : "nblood.exe", 0xFE1E8A8, 0x2C8, 0x1D8;
-	byte Level : "nblood.exe", 0xFE1E446;
-	byte MenuStage : "nblood.exe", 0xFE20950;
-}
+	byte Episode : "nblood.exe", 0x6B5D24;
+	byte Loading : "nblood.exe", 0x12284BCC;	
+	byte Loading2 : "nblood.exe", 0x12284BCC;
+	byte Loading3 : "nblood.exe", 0x12284BC8;
+	byte MenuMaster : "nblood.exe", 0x9FEC04;
+	byte Credits : "nblood.exe", 0x6D57A8, 0x2C8, 0x280;
+	byte Level : "nblood.exe", 0x43B328;
+	byte MenuStage : "nblood.exe", 0xA27E50;
 
 init
 {
