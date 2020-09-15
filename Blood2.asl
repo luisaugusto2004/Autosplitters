@@ -69,6 +69,7 @@ state("nblood", "NBlood")
 	byte Credits : "nblood.exe", 0x6D57A8, 0x2C8, 0x280;
 	byte Level : "nblood.exe", 0x43B328;
 	byte MenuStage : "nblood.exe", 0xA27E50;
+}
 
 init
 {
