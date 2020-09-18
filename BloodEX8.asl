@@ -1,7 +1,7 @@
 state("anuket_x64")
 {
 	byte LevelTransition : "anuket_x64.exe", 0x675F50;
-	byte Credits : "anuket_x64.exe", 0x4FC132;
+	byte Credits : "anuket_x64.exe", 0x6616C2;
 	byte Episode : "anuket_x64.exe", 0x4FD120;
 	byte GLTransition : "anuket_x64.exe", 0x69E4D8;
 	byte Level : "anuket_x64.exe", 0x4FA3A8, 0x3;
@@ -42,7 +42,7 @@ split
 		vars.SplitIndex += 1;
 		return true;
 	}
-	else if (!vars.Episodes[current.Episode] && current.Credits == 134){
+	else if (!vars.Episodes[current.Episode] && current.Credits != 0){
 			vars.Episodes[current.Episode] = true;
 			vars.SplitIndex = 0;
 			return true;
