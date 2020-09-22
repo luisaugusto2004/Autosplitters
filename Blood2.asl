@@ -49,14 +49,14 @@ state("Dosbox", "0, 73, 0, 0")
 
 state("Dosbox", "1.02")
 {
-	byte Episode : "dosbox.exe", 0x193A1A0, 0x3E0344;
+	byte Episode : "dosbox.exe", 0x193A1A0, 0x3456A4;
 	byte Loading : "dosbox.exe", 0x193A1A0, 0x56E690;
 	byte Loading2 : "dosbox.exe", 0x193A1A0, 0x56E694;
 	byte Loading3 : "dosbox.exe", 0x193A1A0, 0x56E698;
-	byte MenuMaster : "dosbox.exe", 0x193A1A0, 0x2D3F08;
-	byte Credits : "dosbox.exe", 0x193A1A0, 0x3EED89C;
-	byte Level : "dosbox.exe", 0x193A1A0, 0x359092;
-	byte MenuStage : "dosbox.exe", 0x193A1A0, 0x40A0EC;
+	byte MenuMaster : "dosbox.exe", 0x193A1A0, 0x36F425;
+	byte Credits : "dosbox.exe", 0x193A1A0, 0x2F4F2C;
+	byte Level : "dosbox.exe", 0x193A1A0, 0x2BE3F2;
+	byte MenuStage : "dosbox.exe", 0x193A1A0, 0x36F44C;
 }
 
 state("nblood", "NBlood")
@@ -108,6 +108,7 @@ start
 				vars.Episodes.Add(2, false);
 				vars.Episodes.Add(3, false);
 				vars.Episodes.Add(4, false);
+				vars.Episodes.Add(5, false);
 			return true;
 		}
 	}
@@ -120,6 +121,7 @@ start
 				vars.Episodes.Add(2, false);
 				vars.Episodes.Add(3, false);
 				vars.Episodes.Add(4, false);
+				vars.Episodes.Add(5, false);
 			return true;
 		}
 }
@@ -132,10 +134,6 @@ split
 			return true;
 		}
 	}
-	else if (settings["1.02"]){
-		if (current.Level != old.Level)
-			return true;
-	}
 	else if (current.Level == vars.split[vars.SplitIndex] && current.MenuMaster == 0){
 			vars.SplitIndex += 1;
 			return true;
@@ -145,9 +143,16 @@ split
 			vars.SplitIndex = 0;
 			return true;
 		}
+		else if (settings["1.02"]){
+			if (!vars.Episodes[current.Episode] && current.Credits != 0 && current.MenuMaster == 1 && current.MenuStage != 2 && current.MenuStage != 3){
+				vars.Episodes[current.Episode] = true;
+				vars.SplitIndex = 0;
+				return true;
+				}
+			}
 	}
 
 isLoading
 {
-	return (current.Loading == 1 || current.Loading2 == 1 || current.Loading3 == 1);
+	return (current.Loading == 1 || current.Loading2 == 1);
 }
