@@ -1,4 +1,4 @@
-state("anuket_x64")
+state("anuket_x64", "Steam")
 {
 	byte LevelTransition : "anuket_x64.exe", 0x675F50;
 	byte Credits : "anuket_x64.exe", 0x6616C2;
@@ -7,6 +7,17 @@ state("anuket_x64")
 	byte Level : "anuket_x64.exe", 0x4FA3A8, 0x3;
 	byte Savinglol : "anuket_x64.exe", 0x5BB800;
 	byte MenuStage : "anuket_x64.exe", 0x4FD1DC;
+}
+
+state("anuket_x64", "GOG")
+{
+	byte LevelTransition : "anuket_x64.exe", 0x675F50;
+	byte Credits : "anuket_x64.exe", 0x506119;
+	byte Episode : "anuket_x64.exe", 0x509160;
+	byte GLTransition : "anuket_x64.exe", 0x69E4D8;
+	byte Level : "anuket_x64.exe", 0x506548, 0x3;
+	byte Savinglol : "anuket_x64.exe", 0x5C84F0;
+	byte MenuStage : "anuket_x64.exe", 0x50921C;
 }
 
 init
@@ -19,6 +30,13 @@ init
 		
 	vars.SplitIndex = 0;
 	vars.split = new List<int> {50, 51, 52, 53, 54, 55, 56, 57};		// Level splits if needed 
+	
+	if (modules.First().ModuleMemorySize == 7258112){
+		version = "Steam";
+	}
+	else {
+		version = "GOG";
+	}
 }
 
 start
