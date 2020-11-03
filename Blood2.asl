@@ -154,5 +154,4 @@ split
 
 isLoading
 {
-	return (current.Loading == 1 || current.Loading2 == 1);
 }
