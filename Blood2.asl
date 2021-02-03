@@ -61,14 +61,14 @@ state("Dosbox", "1.02")
 
 state("nblood", "NBlood")
 {
-	byte Episode : "nblood.exe", 0x6B5D24;
+	byte Episode : "nblood.exe", 0x6BE544;
 	byte Loading : "nblood.exe", 0x12284BCC;	
 	byte Loading2 : "nblood.exe", 0x12284BCC;
 	byte Loading3 : "nblood.exe", 0x12284BC8;
-	byte MenuMaster : "nblood.exe", 0x9FEC04;
-	byte Credits : "nblood.exe", 0x6D57A8, 0x2C8, 0x280;
-	byte Level : "nblood.exe", 0x43B328;
-	byte MenuStage : "nblood.exe", 0xA27E50;
+	byte MenuMaster : "nblood.exe", 0xA07424;
+	byte Credits : "nblood.exe", 0xE6D54D;
+	byte Level : "nblood.exe", 0x43BCC8;
+	byte MenuStage : "nblood.exe", 0xA30670;
 }
 
 init
@@ -129,7 +129,7 @@ start
 split
 {
 	if (settings["Episodes only"]){
-		if (!vars.Episodes[current.Episode] && current.Credits == 1){
+		if (!vars.Episodes[current.Episode] && current.Credits != 0){
 			vars.Episodes[current.Episode] = true;
 			return true;
 		}
@@ -138,7 +138,7 @@ split
 			vars.SplitIndex += 1;
 			return true;
 		}
-		else if (!vars.Episodes[current.Episode] && current.Credits == 1){
+		else if (!vars.Episodes[current.Episode] && current.Credits != 0){
 			vars.Episodes[current.Episode] = true;
 			vars.SplitIndex = 0;
 			return true;
