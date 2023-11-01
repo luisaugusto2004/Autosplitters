@@ -66,20 +66,41 @@ state("nblood", "NBlood")
 	byte Loading2 : "nblood.exe", 0x12284BCC;
 	byte Loading3 : "nblood.exe", 0x12284BC8;
 	byte MenuMaster : "nblood.exe", 0xA07424;
-	byte Credits : "nblood.exe", 0xE6D54D;
+	byte Credits : "nblood.exe", 0x0E67F80, 0x70;
 	byte Level : "nblood.exe", 0x43BCC8;
 	byte MenuStage : "nblood.exe", 0xA30670;
 }
 
+state("nblood", "NBloodDaus")
+{
+	byte Episode : "nblood.exe", 0x635D84;
+	byte Loading : "nblood.exe", 0x12284BCC;	
+	byte Loading2 : "nblood.exe", 0x12284BCC;
+	byte Loading3 : "nblood.exe", 0x12284BC8;
+	byte MenuMaster : "nblood.exe", 0x70AF60;
+	byte Credits : "nblood.exe", 0x0663830,0x70;
+	byte Level : "nblood.exe", 0x63602C;
+	byte MenuStage : "nblood.exe", 0x1840C70;
+	byte InterMission: "nblood.exe", 0x183D6CC;
+}
+
 init
 {
-	if (modules.First().ModuleMemorySize == 271159296){
+	
+	if (modules.First().ModuleMemorySize == 305385472){ //origi
 		version = "NBlood";
+		print("vers: " + version);
+	}
+	else if(modules.First().ModuleMemorySize == 38912000) //daus
+	{
+		version = "NBloodDaus";
+		print("vers: " + version);
 	}
 	else if (settings["1.02"]){
 		version = "1.02";
 	}
 	else{
+		print("vers:" + modules.First().ModuleMemorySize);
 		version = modules.First().FileVersionInfo.ProductVersion;
 	}
 	
@@ -87,10 +108,10 @@ init
 	vars.split = new List<int> {1, 2, 3, 4, 5, 6, 7, 8, 9};		// Level splits if needed 
 	
 	vars.Episodes = new Dictionary<byte, bool>();		// will allow for any episode order
+        vars.Episodes.Add(0, false);
         vars.Episodes.Add(1, false);
         vars.Episodes.Add(2, false);
         vars.Episodes.Add(3, false);
-        vars.Episodes.Add(4, false);
 }
 
 startup
@@ -104,11 +125,11 @@ start
 	if (settings["Episodes only"]){
 		if (current.Level == 0 && (current.MenuStage == 1 && old.MenuStage == 3) || (current.MenuStage == 0 && old.MenuStage == 3)){
 			vars.Episodes = new Dictionary<byte, bool>();
+				vars.Episodes.Add(0, false);
 				vars.Episodes.Add(1, false);
 				vars.Episodes.Add(2, false);
 				vars.Episodes.Add(3, false);
 				vars.Episodes.Add(4, false);
-				vars.Episodes.Add(5, false);
 			return true;
 		}
 	}
@@ -117,11 +138,11 @@ start
 			vars.split = new List<int> {1, 2, 3, 4, 5, 6, 7, 8, 9};
 			
 			vars.Episodes = new Dictionary<byte, bool>();
+				vars.Episodes.Add(0, false);
 				vars.Episodes.Add(1, false);
 				vars.Episodes.Add(2, false);
 				vars.Episodes.Add(3, false);
 				vars.Episodes.Add(4, false);
-				vars.Episodes.Add(5, false);
 			return true;
 		}
 }
@@ -138,18 +159,18 @@ split
 			vars.SplitIndex += 1;
 			return true;
 		}
-		else if (!vars.Episodes[current.Episode] && current.Credits != 0){
+	else if (!vars.Episodes[current.Episode] && current.Credits != 0){
+		vars.Episodes[current.Episode] = true;
+		vars.SplitIndex = 0;
+		return true;
+	}
+	else if (settings["1.02"]){
+		if (!vars.Episodes[current.Episode] && current.Credits != 0 && current.MenuMaster == 1 && current.MenuStage != 2 && current.MenuStage != 3){
 			vars.Episodes[current.Episode] = true;
 			vars.SplitIndex = 0;
 			return true;
-		}
-		else if (settings["1.02"]){
-			if (!vars.Episodes[current.Episode] && current.Credits != 0 && current.MenuMaster == 1 && current.MenuStage != 2 && current.MenuStage != 3){
-				vars.Episodes[current.Episode] = true;
-				vars.SplitIndex = 0;
-				return true;
-				}
 			}
+		}
 	}
 
 isLoading
