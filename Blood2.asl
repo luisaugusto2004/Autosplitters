@@ -71,7 +71,7 @@ state("nblood", "NBlood")
 	byte MenuStage : "nblood.exe", 0xA30670;
 }
 
-state("nblood", "NBloodDaus")
+state("nblood", "NBloodDaus1")
 {
 	byte Episode : "nblood.exe", 0x635D84;
 	byte Loading : "nblood.exe", 0x12284BCC;	
@@ -84,6 +84,19 @@ state("nblood", "NBloodDaus")
 	byte InterMission: "nblood.exe", 0x183D6CC;
 }
 
+state("nblood", "NBloodDaus2")
+{
+	byte Episode : "nblood.exe", 0x6D28BC;
+	byte Loading : "nblood.exe", 0x12284BCC;	
+	byte Loading2 : "nblood.exe", 0x12284BCC;
+	byte Loading3 : "nblood.exe", 0x12284BC8;
+	byte MenuMaster : "nblood.exe", 0x6DC7E0;
+	byte Credits : "nblood.exe", 0x06FF590,0x70;
+	byte Level : "nblood.exe", 0x6D281C;
+	byte MenuStage : "nblood.exe", 0x18D0AA0;
+	byte InterMission: "nblood.exe", 0x07054D8, 0xE80, 0x228;
+}
+
 init
 {
 	
@@ -93,7 +106,12 @@ init
 	}
 	else if(modules.First().ModuleMemorySize == 38912000) //daus
 	{
-		version = "NBloodDaus";
+		version = "NBloodDaus1";
+		print("vers: " + version);
+	}
+	else if(modules.First().ModuleMemorySize == 46006272) //daus
+	{
+		version = "NBloodDaus2";
 		print("vers: " + version);
 	}
 	else if (settings["1.02"]){
