@@ -86,7 +86,7 @@ state("nblood", "NBloodDaus1")
 
 state("nblood", "NBloodDaus2")
 {
-	byte Episode : "nblood.exe", 0x6D28BC;
+    	byte Episode : "nblood.exe", 0x6D28BC;
 	byte Loading : "nblood.exe", 0x12284BCC;	
 	byte Loading2 : "nblood.exe", 0x12284BCC;
 	byte Loading3 : "nblood.exe", 0x12284BC8;
@@ -96,101 +96,94 @@ state("nblood", "NBloodDaus2")
 	byte MenuStage : "nblood.exe", 0x18D0AA0;
 	byte InterMission: "nblood.exe", 0x07054D8, 0xE80, 0x228;
 }
+state("nblood", "NBloodDaus3")
+{
+    	byte Episode : "nblood.exe", 0x6EC4A0, 0x10;
+    	byte Loading : "nblood.exe", 0x12284BCC;	
+	byte Loading2 : "nblood.exe", 0x12284BCC;
+	byte Loading3 : "nblood.exe", 0x12284BC8;
+    	byte MenuMaster : "nblood.exe", 0x7BCB90;
+	byte Credits : "nblood.exe", 0x7126C9;
+	byte Level : "nblood.exe", 0x6EC874;
+	byte MenuStage : "nblood.exe", 0x18F3DD0;
+	byte InterMission: "nblood.exe", 0x18F3D6C;
+}
 
 init
 {
-	
-	if (modules.First().ModuleMemorySize == 305385472){ //origi
-		version = "NBlood";
-		print("vers: " + version);
-	}
-	else if(modules.First().ModuleMemorySize == 38912000) //daus
-	{
-		version = "NBloodDaus1";
-		print("vers: " + version);
-	}
-	else if(modules.First().ModuleMemorySize == 46006272) //daus
-	{
-		version = "NBloodDaus2";
-		print("vers: " + version);
-	}
-	else if (settings["1.02"]){
-		version = "1.02";
-	}
-	else{
-		print("vers:" + modules.First().ModuleMemorySize);
-		version = modules.First().FileVersionInfo.ProductVersion;
-	}
-	
-	vars.SplitIndex = 0;
-	vars.split = new List<int> {1, 2, 3, 4, 5, 6, 7, 8, 9};		// Level splits if needed 
-	
-	vars.Episodes = new Dictionary<byte, bool>();		// will allow for any episode order
-        vars.Episodes.Add(0, false);
-        vars.Episodes.Add(1, false);
-        vars.Episodes.Add(2, false);
-        vars.Episodes.Add(3, false);
+    if(modules.First().ModuleMemorySize == 305385472){ //origi
+        version = "NBlood";
+        print("vers: " + version);
+    }
+    else if(modules.First().ModuleMemorySize == 38912000){ //daus
+        version = "NBloodDaus1";
+        print("vers: " + version);
+    }
+    else if(modules.First().ModuleMemorySize == 46006272){ //daus
+        version = "NBloodDaus2";
+        print("vers: " + version);
+    }
+    else if(modules.First().ModuleMemorySize == 50069504){ //daus 
+        version = "NBloodDaus3";
+        print("vers: " + version);
+    } else if(settings["1.02"]) {
+        version = "1.02";
+    }
+    else{
+	print("vers:" + modules.First().ModuleMemorySize);
+	version = modules.First().FileVersionInfo.ProductVersion;
+    }
+            
+    vars.DoneMaps = new List<int>(); // Keeps track of completed levels
+    vars.Episodes = new Dictionary<byte, bool>(); // Tracks completed episodes
+    vars.Episodes[0] = false;
+    vars.Episodes[1] = false;
+    vars.Episodes[2] = false;
+    vars.Episodes[3] = false;
+    vars.Episodes[5] = false;
 }
 
 startup
 {
-	settings.Add("Episodes only", false, "4 Splits for episodes");
-	settings.Add("1.02", false, "Running on 1.02 version of game"); 
+    settings.Add("Episodes only", false, "4 Splits for episodes");
+    settings.Add("1.02", false, "Using 1.02 version");
 }
 
 start
 {
-	if (settings["Episodes only"]){
-		if (current.Level == 0 && (current.MenuStage == 1 && old.MenuStage == 3) || (current.MenuStage == 0 && old.MenuStage == 3)){
-			vars.Episodes = new Dictionary<byte, bool>();
-				vars.Episodes.Add(0, false);
-				vars.Episodes.Add(1, false);
-				vars.Episodes.Add(2, false);
-				vars.Episodes.Add(3, false);
-				vars.Episodes.Add(4, false);
-			return true;
-		}
-	}
-	else if (current.Level == 0 && (current.MenuStage == 1 && old.MenuStage == 3) || (current.MenuStage == 0 && old.MenuStage == 3)){
-			vars.SplitIndex = 0;
-			vars.split = new List<int> {1, 2, 3, 4, 5, 6, 7, 8, 9};
-			
-			vars.Episodes = new Dictionary<byte, bool>();
-				vars.Episodes.Add(0, false);
-				vars.Episodes.Add(1, false);
-				vars.Episodes.Add(2, false);
-				vars.Episodes.Add(3, false);
-				vars.Episodes.Add(4, false);
-			return true;
-		}
+    if (current.Level == 0 && (current.MenuStage == 1 && old.MenuStage == 3) || (current.MenuStage == 0 && old.MenuStage == 3)) {
+        vars.DoneMaps.Clear();
+        vars.Episodes[0] = false;
+        vars.Episodes[1] = false;
+        vars.Episodes[2] = false;
+        vars.Episodes[3] = false;
+	vars.Episodes[5] = false;
+        return true;
+    }
 }
 
 split
 {
-	if (settings["Episodes only"]){
-		if (!vars.Episodes[current.Episode] && current.Credits != 0){
-			vars.Episodes[current.Episode] = true;
-			return true;
+	if (settings["Episodes only"]) {
+ 		// Split for episodes only
+		if (!vars.Episodes[current.Episode] && current.Credits != 0) {
+        		vars.Episodes[current.Episode] = true;
+        		return true;
+        }
+    } 
+    else {
+        // Split for levels
+	if (!vars.DoneMaps.Contains(current.Level) && old.Level != current.Level && current.MenuMaster == 0){
+	 	if(current.Level != 0){
+            		vars.DoneMaps.Add(current.Level);
+            		return true;
 		}
 	}
-	else if (current.Level == vars.split[vars.SplitIndex] && current.MenuMaster == 0){
-			vars.SplitIndex += 1;
-			return true;
-		}
-	else if (!vars.Episodes[current.Episode] && current.Credits != 0){
+        // Split at credits if episode not already completed
+        if (!vars.Episodes[current.Episode] && current.Credits != 0) {
 		vars.Episodes[current.Episode] = true;
-		vars.SplitIndex = 0;
-		return true;
-	}
-	else if (settings["1.02"]){
-		if (!vars.Episodes[current.Episode] && current.Credits != 0 && current.MenuMaster == 1 && current.MenuStage != 2 && current.MenuStage != 3){
-			vars.Episodes[current.Episode] = true;
-			vars.SplitIndex = 0;
-			return true;
-			}
-		}
-	}
-
-isLoading
-{
+	    	vars.DoneMaps.Clear();
+            	return true;
+        }
+    }
 }
