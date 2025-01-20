@@ -134,8 +134,8 @@ init
 	version = modules.First().FileVersionInfo.ProductVersion;
     }
             
-    vars.DoneMaps = new List<int>(); // Keeps track of completed levels
-    vars.Episodes = new Dictionary<byte, bool>(); // Tracks completed episodes
+    vars.DoneMaps = new List<int>();
+    vars.Episodes = new Dictionary<byte, bool>();
     vars.Episodes[0] = false;
     vars.Episodes[1] = false;
     vars.Episodes[2] = false;
@@ -164,26 +164,34 @@ start
 
 split
 {
-	if (settings["Episodes only"]) {
- 		// Split for episodes only
-		if (!vars.Episodes[current.Episode] && current.Credits != 0) {
-        		vars.Episodes[current.Episode] = true;
-        		return true;
+    if (settings["Episodes only"]) {
+	if (!vars.Episodes[current.Episode] && current.Credits != 0) {
+        	vars.Episodes[current.Episode] = true;
+        	return true;
         }
     } 
     else {
-        // Split for levels
 	if (!vars.DoneMaps.Contains(current.Level) && old.Level != current.Level && current.MenuMaster == 0){
 	 	if(current.Level != 0){
             		vars.DoneMaps.Add(current.Level);
             		return true;
 		}
 	}
-        // Split at credits if episode not already completed
         if (!vars.Episodes[current.Episode] && current.Credits != 0) {
 		vars.Episodes[current.Episode] = true;
 	    	vars.DoneMaps.Clear();
             	return true;
+        } 
+	else if (settings["1.02"]){
+		if (!vars.Episodes[current.Episode] && current.Credits != 0 && current.MenuMaster == 1 && current.MenuStage != 2 && current.MenuStage != 3){
+			vars.Episodes[current.Episode] = true;
+			vars.DoneMaps.Clear();
+			return true;
+	    }
         }
     }
+}
+
+isLoading
+{
 }
