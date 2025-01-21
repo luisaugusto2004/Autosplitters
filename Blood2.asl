@@ -134,63 +134,101 @@ init
 	version = modules.First().FileVersionInfo.ProductVersion;
     }
             
+    vars.SplitIndex = 0;        
     vars.DoneMaps = new List<int>();
     vars.Episodes = new Dictionary<byte, bool>();
-    vars.Episodes[0] = false;
-    vars.Episodes[1] = false;
-    vars.Episodes[2] = false;
-    vars.Episodes[3] = false;
-    vars.Episodes[5] = false;
+        vars.Episodes.Add(0, false);
+        vars.Episodes.Add(1, false);
+        vars.Episodes.Add(2, false);
+        vars.Episodes.Add(3, false);
+	vars.Episodes.Add(5, false);
 }
 
 startup
 {
-    settings.Add("Episodes only", false, "4 Splits for episodes");
+    settings.Add("Episodes only", false, "4 Splits for episodes(serves for both any% and 100%)");
+    settings.Add("100%", false, "100% run (only check if using level splits)");
     settings.Add("1.02", false, "Using 1.02 version");
 }
 
 start
 {
-    if (current.Level == 0 && (current.MenuStage == 1 && old.MenuStage == 3) || (current.MenuStage == 0 && old.MenuStage == 3)) {
-        vars.DoneMaps.Clear();
-        vars.Episodes[0] = false;
-        vars.Episodes[1] = false;
-        vars.Episodes[2] = false;
-        vars.Episodes[3] = false;
-	vars.Episodes[5] = false;
-        return true;
-    }
+
+	if (settings["Episodes only"]){
+		if (current.Level == 0 && (current.MenuStage == 1 && old.MenuStage == 3) || (current.MenuStage == 0 && old.MenuStage == 3)){
+			vars.Episodes = new Dictionary<byte, bool>();
+				vars.Episodes.Add(0, false);
+				vars.Episodes.Add(1, false);
+				vars.Episodes.Add(2, false);
+				vars.Episodes.Add(3, false);
+				vars.Episodes.Add(5, false);
+			return true;
+		}
+	}
+	else if(settings["100%"]) {
+		if (current.Level == 0 && (current.MenuStage == 1 && old.MenuStage == 3) || (current.MenuStage == 0 && old.MenuStage == 3)) {
+			vars.DoneMaps.Clear();
+
+			vars.Episodes = new Dictionary<byte, bool>();
+				vars.Episodes.Add(0, false);
+				vars.Episodes.Add(1, false);
+				vars.Episodes.Add(2, false);
+				vars.Episodes.Add(3, false);
+				vars.Episodes.Add(5, false);
+			return true;
+		}
+	}
+	else if (current.Level == 0 && (current.MenuStage == 1 && old.MenuStage == 3) || (current.MenuStage == 0 && old.MenuStage == 3)){
+			vars.SplitIndex = 0;
+			vars.split = new List<int> {1, 2, 3, 4, 5, 6, 7, 8, 9};
+			
+			vars.Episodes = new Dictionary<byte, bool>();
+				vars.Episodes.Add(0, false);
+				vars.Episodes.Add(1, false);
+				vars.Episodes.Add(2, false);
+				vars.Episodes.Add(3, false);
+				vars.Episodes.Add(5, false);
+			return true;
+	}
 }
 
 split
 {
-    if (settings["Episodes only"]) {
-	if (!vars.Episodes[current.Episode] && current.Credits != 0) {
-        	vars.Episodes[current.Episode] = true;
-        	return true;
-        }
-    } 
-    else {
-	if (!vars.DoneMaps.Contains(current.Level) && old.Level != current.Level && current.MenuMaster == 0){
-	 	if(current.Level != 0){
-            		vars.DoneMaps.Add(current.Level);
-            		return true;
+	if (settings["Episodes only"]){
+		if (!vars.Episodes[current.Episode] && current.Credits != 0){
+			vars.Episodes[current.Episode] = true;
+			return true;
 		}
 	}
-        if (!vars.Episodes[current.Episode] && current.Credits != 0) {
+	else if (settings["100%"]) {
+		if (!vars.DoneMaps.Contains(current.Level) && current.MenuMaster == 0 && old.Level != current.Level && current.Level != 0) {
+			vars.DoneMaps.Add(current.Level);
+			return true;
+		}
+
+		if (!vars.Episodes[current.Episode] && current.Credits != 0) {
+			vars.Episodes[current.Episode] = true;
+	    		vars.DoneMaps.Clear();
+            		return true;
+        	} 
+	}
+	else if (current.Level == vars.split[vars.SplitIndex] && current.MenuMaster == 0){
+			vars.SplitIndex += 1;
+			return true;
+		}
+	else if (!vars.Episodes[current.Episode] && current.Credits != 0){
 		vars.Episodes[current.Episode] = true;
-	    	vars.DoneMaps.Clear();
-            	return true;
-        } 
+		vars.SplitIndex = 0;
+		return true;
+	}
 	else if (settings["1.02"]){
 		if (!vars.Episodes[current.Episode] && current.Credits != 0 && current.MenuMaster == 1 && current.MenuStage != 2 && current.MenuStage != 3){
 			vars.Episodes[current.Episode] = true;
-			vars.DoneMaps.Clear();
+			vars.SplitIndex = 0;
 			return true;
-	    }
-        }
-    }
-}
+			}
+		}
+	}
 
 isLoading
 {
