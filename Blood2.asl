@@ -97,9 +97,21 @@ state("nblood", "NBloodDaus2")
 	byte InterMission: "nblood.exe", 0x07054D8, 0xE80, 0x228;
 }
 
-init
+state("nblood", "NBloodDaus3")
 {
-	
+    byte Episode : "nblood.exe", 0x6EC4A0, 0x10;
+    byte Loading : "nblood.exe", 0x12284BCC;	
+	byte Loading2 : "nblood.exe", 0x12284BCC;
+	byte Loading3 : "nblood.exe", 0x12284BC8;
+    byte MenuMaster : "nblood.exe", 0x7BCB90;
+	byte Credits : "nblood.exe", 0x7126C9;
+	byte Level : "nblood.exe", 0x6EC874;
+	byte MenuStage : "nblood.exe", 0x18F3DD0;
+	byte InterMission: "nblood.exe", 0x18F3D6C;
+}
+
+init
+{	
 	if (modules.First().ModuleMemorySize == 305385472){ //origi
 		version = "NBlood";
 		print("vers: " + version);
@@ -114,6 +126,10 @@ init
 		version = "NBloodDaus2";
 		print("vers: " + version);
 	}
+	else if(modules.First().ModuleMemorySize == 50069504){ //daus 
+        version = "NBloodDaus3";
+        print("vers: " + version);
+	}
 	else if (settings["1.02"]){
 		version = "1.02";
 	}
@@ -125,16 +141,20 @@ init
 	vars.SplitIndex = 0;
 	vars.split = new List<int> {1, 2, 3, 4, 5, 6, 7, 8, 9};		// Level splits if needed 
 	
+	vars.DoneMaps = new List<int>();		// will be used for 100% runs to track all unique map completions
+	
 	vars.Episodes = new Dictionary<byte, bool>();		// will allow for any episode order
         vars.Episodes.Add(0, false);
         vars.Episodes.Add(1, false);
         vars.Episodes.Add(2, false);
         vars.Episodes.Add(3, false);
+	vars.Episodes.Add(5, false);		// This is for Post Mortem
 }
 
 startup
 {
-	settings.Add("Episodes only", false, "4 Splits for episodes");
+	settings.Add("Episodes only", false, "4 Splits for episodes(serves for both any% and 100% runs)");
+	settings.Add("100%", false, "100% run (only check if using level splits)");
 	settings.Add("1.02", false, "Running on 1.02 version of game"); 
 }
 
@@ -148,6 +168,22 @@ start
 				vars.Episodes.Add(2, false);
 				vars.Episodes.Add(3, false);
 				vars.Episodes.Add(4, false);
+				vars.Episodes.Add(5, false);
+			return true;
+		}
+	}
+	else if(settings["100%"]) {
+		if (current.Level == 0 && (current.MenuStage == 1 && old.MenuStage == 3) || (current.MenuStage == 0 && old.MenuStage == 3)){
+			vars.DoneMaps.Clear();
+			vars.DoneMaps = new List<int>();
+
+			vars.Episodes = new Dictionary<byte, bool>();
+				vars.Episodes.Add(0, false);
+				vars.Episodes.Add(1, false);
+				vars.Episodes.Add(2, false);
+				vars.Episodes.Add(3, false);
+				vars.Episodes.Add(4, false);
+				vars.Episodes.Add(5, false);
 			return true;
 		}
 	}
@@ -161,8 +197,9 @@ start
 				vars.Episodes.Add(2, false);
 				vars.Episodes.Add(3, false);
 				vars.Episodes.Add(4, false);
+				vars.Episodes.Add(5, false);
 			return true;
-		}
+	}
 }
 
 split
@@ -172,6 +209,19 @@ split
 			vars.Episodes[current.Episode] = true;
 			return true;
 		}
+	}
+	else if (settings["100%"]) {
+		// Split on entering a new level, including secret levels (used in 100% mode to track all unique map completions)
+		if (!vars.DoneMaps.Contains(current.Level) && current.MenuMaster == 0 && old.Level != current.Level && current.Level != 0){
+			vars.DoneMaps.Add(current.Level);
+			return true;
+		}
+
+		if (!vars.Episodes[current.Episode] && current.Credits != 0){
+			vars.Episodes[current.Episode] = true;
+	    	vars.DoneMaps.Clear();
+            return true;
+        } 
 	}
 	else if (current.Level == vars.split[vars.SplitIndex] && current.MenuMaster == 0){
 			vars.SplitIndex += 1;
@@ -189,7 +239,7 @@ split
 			return true;
 			}
 		}
-	}
+}
 
 isLoading
 {
